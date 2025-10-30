@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    env_file:
+      - .env
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    env_file:
+      - .env
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+  
+volumes:
+  postgres-data:
+    driver: local
+  mongo-data:
+    driver: local
