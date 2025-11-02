@@ -7,6 +7,8 @@ services:
     ports:
       - "5433:5432"
     volumes:
+      - ./init-scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh
+      - ./restaurants.jsonl:/tmp/restaurants.jsonl
       - postgres-data:/var/lib/postgresql/data
   
   mongo:
@@ -17,6 +19,8 @@ services:
     ports:
       - "27018:27017"
     volumes:
+      - ./init-scripts/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh
+      - ./restaurants.jsonl:/tmp/restaurants.jsonl
       - mongo-data:/data/db
   
 volumes:
