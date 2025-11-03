@@ -1,8 +1,18 @@
 from database import get_postgres_connection
 from typing import Optional, Any
+import json
 
 
 class PostgresRepository:
+
+    @staticmethod
+    def _build_nested_path(field: str, value: Any) -> dict:
+        keys = field.split(".")
+        nested_dict = {keys[-1]: value}
+        for key in reversed(keys[0:-1]):
+            nested_dict = {key: nested_dict}
+        return nested_dict
+
 
     @staticmethod
     def find_with_parameters(
@@ -17,11 +27,12 @@ class PostgresRepository:
 
                 if isinstance(field, str):
                     if value is None:
-                        parameters.append(field)
-                        query += "\nWHERE document->>%s IS NULL"
+                        query += "\nWHERE (document #>> %s) IS NULL"
+                        parameters.append(field.split("."))
                     else:
-                        parameters.extend([field, value])
-                        query += "\nWHERE document->>%s = %s"
+                        query += "\nWHERE document @> %s::jsonb"
+                        json_path = PostgresRepository._build_nested_path(field, value)
+                        parameters.append(json.dumps(json_path))
 
                 if isinstance(limit, int):
                     parameters.append(limit)
