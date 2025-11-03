@@ -4,23 +4,33 @@ from datetime import datetime
 import logging
 
 
-repeat_times = 200
+repeat_times = 500
 
 logging.basicConfig(level=logging.INFO)
 
-logging.info("STARTING MONGO BENCHMARK")
-mongo_elapsed_time = 0
-for i in range(0, repeat_times):
-    start_time = datetime.now()
-    MongoRepository.find_with_parameters()
-    mongo_elapsed_time += (datetime.now() - start_time).total_seconds()
-logging.info(f"FINISHED MONGO BENCHMARK: {mongo_elapsed_time} seconds elapsed")
+
+print("::: BUSCAR TODOS OS DOCUMENTOS :::")
+print(f"::: REPETIR {repeat_times} VEZES")
 
 
-logging.info("STARTING POSTGRES BENCHMARK")
-pg_elapsed_time = 0
+print("\n======= MongoDB =======")
+mongo_start_time = datetime.now()
+total_documents = 0
 for i in range(0, repeat_times):
-    start_time = datetime.now()
-    PostgresRepository.find_with_parameters()
-    pg_elapsed_time += (datetime.now() - start_time).total_seconds()
-logging.info(f"FINISHED POSTGRES BENCHMARK: {pg_elapsed_time} seconds elapsed")
+    results = MongoRepository.find_with_parameters()
+    total_documents += len(results)
+mongo_finish_time = datetime.now()
+print(f"::: {total_documents} DOCUMENTOS BUSCADOS")
+print(f"::: EM {mongo_finish_time - mongo_start_time}")
+print("=======================\n")
+
+print("======= PostgreSQL =======")
+pg_start_time = datetime.now()
+total_documents = 0
+for i in range(0, repeat_times):
+    results = PostgresRepository.find_with_parameters()
+    total_documents += len(results)
+pg_finish_time = datetime.now()
+print(f"::: {total_documents} DOCUMENTOS BUSCADOS")
+print(f"::: EM {pg_finish_time - pg_start_time}")
+print("==========================")
